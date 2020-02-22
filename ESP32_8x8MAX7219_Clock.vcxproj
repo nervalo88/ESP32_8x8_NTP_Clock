@@ -130,7 +130,7 @@
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties arduino.upload.port="COM3" />
+      <UserProperties arduino.upload.port="COM3" custom_esp32_esp32_DebugLevel="none" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

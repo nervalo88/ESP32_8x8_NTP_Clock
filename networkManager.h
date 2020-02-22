@@ -22,8 +22,6 @@ void networkConnect();
 
 String getNTPdate();
 
-char * getNTPtimechr();
-
-String getNTPtime();
+void getNTPtimechr(char * buf);
 
 String HTTPrequestTemperature();

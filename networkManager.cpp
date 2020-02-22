@@ -28,6 +28,12 @@ void networkConnect() {
 	WiFi.mode(WIFI_STA);
 	WiFi.begin(WIFI_SSID, WIFI_PASS);
 
+	while (!WiFi.isConnected()) {
+		Serial.print(".");
+		delay(1000);
+	}
+	Serial.println(WiFi.localIP());
+
 	timeClient.begin();
 	timeClient.setTimeOffset(3600);
 
@@ -50,33 +56,21 @@ String getNTPdate() {
 	//char myString[100] = String::c_str(timeClient.getFormattedDate());
 
 
-	return dateStamp;
+	return dateStamp; 
 }
 
-char* getNTPtimechr() {
+void getNTPtimechr(char *buf) {
 	unsigned long rawTime = timeClient.getEpochTime();
 	unsigned long hours = (rawTime % 86400L) / 3600;
-	//String hoursStr = hours < 10 ? "0" + String(hours) : String(hours);
 
 	unsigned long minutes = (rawTime % 3600) / 60;
-	//String minuteStr = minutes < 10 ? "0" + String(minutes) : String(minutes);
 
 	unsigned long seconds = rawTime % 60;
-	//String secondStr = seconds < 10 ? "0" + String(seconds) : String(seconds);
 	
-	char buffer[20];
-	sprintf(buffer, "%d:%d:%d", hours, minutes, seconds);
-	Serial.println(buffer);
-	return buffer;
+	sprintf(buf, "%02d:%02d:%02d", hours, minutes, seconds);
+	//Serial.println(buffer);
 }
 
-String getNTPtime() {
-
-	formattedDate = timeClient.getFormattedDate();
-	int splitT = formattedDate.indexOf("T");
-	return formattedDate.substring(splitT + 1, formattedDate.length() - 1);
-
-}
 
 String HTTPrequestTemperature() {
 

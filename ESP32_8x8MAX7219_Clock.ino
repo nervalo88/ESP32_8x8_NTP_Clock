@@ -23,12 +23,14 @@ Button2 buttonSwitch = Button2(PUSH_BUTTON_1);
 
 uint32_t prevMillis;
 bool swapScreen;
-int counter;
+int swapcounter;
+unsigned long timer;
 
-String timeStamp;
-String Previous_timeStamp;
+//String timeStamp;
+//String Previous_timeStamp;
 
-char* timestampChr[50];
+char timestampChr[50];
+//char Previous_timeStamp[50]; 
 
 void onSwitchPressed(Button2& btn) {
 	swapScreen = true;
@@ -45,6 +47,7 @@ State loopState = UNDEFINED;
 
 // the setup function runs once when you press reset or power the board
 void setup() {
+
     Serial.begin(115200);
     Serial.println("Start");
 
@@ -55,21 +58,20 @@ void setup() {
     mp.begin();
     mp.setIntensity(1);
 
+	timer = millis();
+
 }
 
 // the loop function runs over and over again until power down or reset
 void loop() {
+	//heap_caps_check_integrity_all(true);
+	//heap_caps_print_heap_info(MALLOC_CAP_DEFAULT);
 
 	buttonSwitch.loop();
 
-	timestampChr[0] = getNTPtimechr();
-
-	Serial.println(
-		
-		timestampChr);
-	timeStamp = getNTPtime();
-    if (timeStamp != Previous_timeStamp ||swapScreen) {
-        Previous_timeStamp = timeStamp;
+    if (millis() - timer > 1000 ||swapScreen) {
+		timer = millis();
+		getNTPtimechr(timestampChr);
         switch (loopState) {
 		default:
 			break;
@@ -85,9 +87,9 @@ void loop() {
 
             mp.drawText(31, 4, HTTPrequestTemperature().c_str());
 			mp.drawText(44,4, "$");
-			counter++;
-            if (swapScreen || counter > 5) {
-				counter = 0;
+			swapcounter++;
+            if (swapScreen || swapcounter > 5) {
+				swapcounter = 0;
                 swapScreen = false;
                 loopState = TIME_DISPLAY;
             }
@@ -95,9 +97,9 @@ void loop() {
         case TIME_DISPLAY:
             Serial.println("TIME_DISPLAY");
             mp.setFont(_renoFont8px);
-			timeStamp = getNTPtime();
+			//timeStamp = getNTPtime();
             mp.clear();
-            mp.drawText(4, mp.getYMax(), timeStamp.c_str());
+            mp.drawText(4, mp.getYMax(), timestampChr);
             if (swapScreen) {
                 swapScreen = false;
                 loopState = DATE_DISPLAY;
@@ -109,5 +111,5 @@ void loop() {
 
     }
 	yield();
-    delay(10);
+    delay(50);
    }
