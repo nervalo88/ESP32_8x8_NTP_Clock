@@ -5,13 +5,11 @@
 #include "networkManager.h"
 #include "Configuration.h"
 
+#define LEAP_YEAR(Y)     ( (Y>0) && !(Y%4) && ( (Y%100) || !(Y%400) ) )
+
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP);
 HTTPClient http;
-
-String dayStamp;
-String formattedDate;
-String temperature;
 
 // NTP server parameters
 int8_t timeZone = 1;
@@ -45,19 +43,6 @@ void networkConnect() {
 
 }
 
-String getNTPdate() {
-
-	formattedDate = timeClient.getFormattedDate();
-	int splitT = formattedDate.indexOf("T");
-	String dateStamp = formattedDate.substring(0, splitT);
-	dateStamp = formattedDate.substring(8, 10) + "/" + formattedDate.substring(5, 7) + "/" + formattedDate.substring(2, 4);
-
-
-	//char myString[100] = String::c_str(timeClient.getFormattedDate());
-
-
-	return dateStamp; 
-}
 
 void getNTPtimechr(char *buf) {
 	unsigned long rawTime = timeClient.getEpochTime();
@@ -68,11 +53,20 @@ void getNTPtimechr(char *buf) {
 	unsigned long seconds = rawTime % 60;
 	
 	sprintf(buf, "%02d:%02d:%02d", hours, minutes, seconds);
+	
 	//Serial.println(buffer);
 }
 
+void getNTPdatechr(char *buf) {
 
-String HTTPrequestTemperature() {
+	struct tm ts;
+	time_t rawTime = timeClient.getEpochTime();
+	ts = *localtime(&rawTime);
+	sprintf(buf,"%d/%02d/%d", ts.tm_mday, ts.tm_mon + 1, (ts.tm_year + 1900)%100);
+}
+
+
+float HTTPrequestTemperature() {
 
 	http.begin("http://192.168.0.40/json.htm?type=devices&rid=28");
 	int httpRespCode = http.GET();
@@ -86,17 +80,13 @@ String HTTPrequestTemperature() {
 		http.end();
 	}
 
+	//DEBUG : to check if JSO object correctly received, test root response
 	//const char* ServerTime = domo_deviceResp_doc["ServerTime"]; // "2020-01-31 23:37:03"
+	//Serial.println(ServerTime);
+	
 	JsonObject result_0 = domo_deviceResp_doc["result"][0];
-	const char* result_0_Data = domo_deviceResp_doc["Data"]; // device temp "-127.0 C"
+	float result_0_Temp = result_0["Temp"];
 	http.end();
-
-	return result_0_Data;
-}
-
-float requestTemperatureVal() {
-	//TO TEST
-	String data = HTTPrequestTemperature();
-	data = data.substring(data.length() - 1, data.length());
-	return atof(data.c_str());
+	
+	return result_0_Temp;
 }

@@ -8,6 +8,9 @@
 
 
 
+#include <ArduinoJson.hpp>
+#include <ArduinoJson.h>
+#include <MD_MAX72xx.h>
 #include "networkManager.h"
 
 #include <MD_MAXPanel.h>
@@ -26,11 +29,8 @@ bool swapScreen;
 int swapcounter;
 unsigned long timer;
 
-//String timeStamp;
-//String Previous_timeStamp;
-
 char timestampChr[50];
-//char Previous_timeStamp[50]; 
+char datestampChr[80];
 
 void onSwitchPressed(Button2& btn) {
 	swapScreen = true;
@@ -43,7 +43,7 @@ enum State {
     TEMP_DISPLAY
 };
 
-State loopState = UNDEFINED;
+State loopState = TIME_DISPLAY;
 
 // the setup function runs once when you press reset or power the board
 void setup() {
@@ -71,21 +71,27 @@ void loop() {
 
     if (millis() - timer > 1000 ||swapScreen) {
 		timer = millis();
-		getNTPtimechr(timestampChr);
+
         switch (loopState) {
+
 		default:
 			break;
+
         case UNDEFINED:
             loopState = TIME_DISPLAY;
             break;
+
         case DATE_DISPLAY:
-            Serial.println("DATE_DISPLAY");
             
+			getNTPdatechr(datestampChr);
+			
 			mp.setFont(_Fixed_5x3);
             mp.clear();
-            mp.drawText(0, mp.getYMax(), getNTPdate().c_str());
+            mp.drawText(0, mp.getYMax(), datestampChr);
 
-            mp.drawText(31, 4, HTTPrequestTemperature().c_str());
+			char buffer[10];
+			sprintf(buffer, "%0.1f",HTTPrequestTemperature());
+            mp.drawText(31, 4, buffer);
 			mp.drawText(44,4, "$");
 			swapcounter++;
             if (swapScreen || swapcounter > 5) {
@@ -93,23 +99,27 @@ void loop() {
                 swapScreen = false;
                 loopState = TIME_DISPLAY;
             }
+			Serial.print(datestampChr);
+			Serial.print(" - ");
+			Serial.println(buffer);
             break;
+
         case TIME_DISPLAY:
-            Serial.println("TIME_DISPLAY");
-            mp.setFont(_renoFont8px);
-			//timeStamp = getNTPtime();
+			getNTPtimechr(timestampChr);
+            
+			mp.setFont(_renoFont8px);
             mp.clear();
             mp.drawText(4, mp.getYMax(), timestampChr);
             if (swapScreen) {
                 swapScreen = false;
                 loopState = DATE_DISPLAY;
             }
+			Serial.println(timestampChr);
             break;
 
         }
 
 
     }
-	yield();
-    delay(50);
+	delay(50);
    }

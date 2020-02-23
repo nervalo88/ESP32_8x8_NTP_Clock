@@ -17,11 +17,12 @@
 #include <NTPClient.h>
 #include <WiFiUdp.h>
 #include <HTTPClient.h>
+#include <time.h>
 
 void networkConnect();
 
-String getNTPdate();
-
 void getNTPtimechr(char * buf);
 
-String HTTPrequestTemperature();
+void getNTPdatechr(char * buf);
+
+float HTTPrequestTemperature();

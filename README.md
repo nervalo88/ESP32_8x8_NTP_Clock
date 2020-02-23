@@ -1,7 +1,9 @@
 # ESP32_8x8_NTP_Clock
 Basically, a NTP clock displayed on MAX7219 8x8 led matrix + some features
 
-**It is a work in progress, requires fixes as with this version, the ESP32 craches on startup (heap memory overrange)**
+**Work in progress, the ESP reset several times at startup, then it works perfectly**
+*Issue : CORRUPT HEAP: multi_heap.c:432 detected at 0x3ffcc94c
+I may not fix thats one as it can be due to my network or hardware... *
 
 ## Hardware required
 - ESP32, this project was developed on a "ESP32 devkit TV1" board

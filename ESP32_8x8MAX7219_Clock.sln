@@ -5,10 +5,6 @@ VisualStudioVersion = 15.0.28307.1022
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ESP32_8x8MAX7219_Clock", "ESP32_8x8MAX7219_Clock.vcxproj", "{C5F80730-F44F-4478-BDAE-6634EFC2CA88}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MD_MAX72xx_Test", "C:\Users\renau\OneDrive\Documents\Arduino\My Examples\MD_MAX72xx_Test\MD_MAX72xx_Test.vcxproj", "{20B5C408-3E93-400E-83E1-28C3B9E544BB}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MD_MAXPanel_Test", "C:\Users\renau\OneDrive\Documents\Arduino\My Examples\MD_MAXPanel_Test\MD_MAXPanel_Test.vcxproj", "{159E6B7E-0325-49A6-A649-4D7D77C8E4F9}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9CA2D57A-49B0-4A04-B4A4-903FB4825D24}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
@@ -24,14 +20,6 @@ Global
 		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x86.Build.0 = Debug|Win32
 		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.ActiveCfg = Release|Win32
 		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.Build.0 = Release|Win32
-		{20B5C408-3E93-400E-83E1-28C3B9E544BB}.Debug|x86.ActiveCfg = Debug|Win32
-		{20B5C408-3E93-400E-83E1-28C3B9E544BB}.Debug|x86.Build.0 = Debug|Win32
-		{20B5C408-3E93-400E-83E1-28C3B9E544BB}.Release|x86.ActiveCfg = Release|Win32
-		{20B5C408-3E93-400E-83E1-28C3B9E544BB}.Release|x86.Build.0 = Release|Win32
-		{159E6B7E-0325-49A6-A649-4D7D77C8E4F9}.Debug|x86.ActiveCfg = Debug|Win32
-		{159E6B7E-0325-49A6-A649-4D7D77C8E4F9}.Debug|x86.Build.0 = Debug|Win32
-		{159E6B7E-0325-49A6-A649-4D7D77C8E4F9}.Release|x86.ActiveCfg = Release|Win32
-		{159E6B7E-0325-49A6-A649-4D7D77C8E4F9}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
