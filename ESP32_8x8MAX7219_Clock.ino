@@ -25,12 +25,12 @@ MD_MAXPanel mp = MD_MAXPanel(HARDWARE_TYPE, CS_PIN, X_DEVICES, Y_DEVICES);
 Button2 buttonSwitch = Button2(PUSH_BUTTON_1);
 
 uint32_t prevMillis;
-bool swapScreen;
-int swapcounter;
-unsigned long timer;
+bool swapScreen = false;
+int swapcounter =0;
+unsigned long timer =0;
 
-char timestampChr[50];
-char datestampChr[80];
+char timestampChr[50] = { '\0' };
+char datestampChr[80] = { '\0' };
 
 void onSwitchPressed(Button2& btn) {
 	swapScreen = true;
@@ -47,6 +47,8 @@ State loopState = TIME_DISPLAY;
 
 // the setup function runs once when you press reset or power the board
 void setup() {
+
+	loopState = TIME_DISPLAY;
 
     Serial.begin(115200);
     Serial.println("Start");

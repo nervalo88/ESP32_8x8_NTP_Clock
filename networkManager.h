@@ -14,7 +14,6 @@
 
 #include <ArduinoJson.h>
 #include <WiFi.h>
-#include <NTPClient.h>
 #include <WiFiUdp.h>
 #include <HTTPClient.h>
 #include <time.h>
