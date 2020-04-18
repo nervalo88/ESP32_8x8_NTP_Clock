@@ -5,8 +5,6 @@
 #include "networkManager.h"
 #include "Configuration.h"
 
-#define LEAP_YEAR(Y)     ( (Y>0) && !(Y%4) && ( (Y%100) || !(Y%400) ) )
-
 HTTPClient http;
 
 // NTP server parameters
@@ -31,27 +29,16 @@ void printLocalTime()
 	Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
 }
 void networkConnect() {
-	WiFi.disconnect(true);
-	WiFi.mode(WIFI_OFF);
-	///esp_wifi_stop();
-	delay(1000);
-	WiFi.persistent(false);
 	WiFi.mode(WIFI_STA);
 	WiFi.begin(WIFI_SSID, WIFI_PASS);
 	while (WiFi.waitForConnectResult() != WL_CONNECTED) {
 		Serial.print("/");
 		delay(1000);
 	}
-	while (!WiFi.isConnected()) {
-		Serial.print(".");
-		delay(1000);
-	}
 	Serial.println(WiFi.localIP());
 
 	configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
 	printLocalTime();
-
-	
 }
 
 
@@ -61,16 +48,8 @@ void getNTPtimechr(char *buf) {
 		Serial.println("Failed to obtain time");
 		return;
 	}
-	/*unsigned long rawTime = timeClient.getEpochTime();
-	unsigned long hours = (rawTime % 86400L) / 3600;
 
-	unsigned long minutes = (rawTime % 3600) / 60;
-
-	unsigned long seconds = rawTime % 60;
-	
-	sprintf(buf, "%02d:%02d:%02d", hours, minutes, seconds);*/
 	sprintf(buf, "%02d:%02d:%02d", timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
-	//Serial.println(buffer);
 }
 
 void getNTPdatechr(char *buf) {
@@ -80,7 +59,7 @@ void getNTPdatechr(char *buf) {
 		Serial.println("Failed to obtain time");
 		return;
 	}
-	sprintf(buf,"%d/%02d/%d", timeinfo.tm_mday, timeinfo.tm_mon + 1, (timeinfo.tm_year + 1900)%100);
+	sprintf(buf,"%d-%02d-%d", timeinfo.tm_mday, timeinfo.tm_mon + 1, (timeinfo.tm_year + 1900)%100);
 }
 
 

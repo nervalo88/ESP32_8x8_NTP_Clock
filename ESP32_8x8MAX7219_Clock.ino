@@ -13,6 +13,9 @@
 #include <MD_MAX72xx.h>
 #include "networkManager.h"
 
+#include <OneWire.h>
+#include <DallasTemperature.h>
+
 #include <MD_MAXPanel.h>
 #include <Button2.h>
 #include "Fonts.h"
@@ -23,6 +26,10 @@
 
 MD_MAXPanel mp = MD_MAXPanel(HARDWARE_TYPE, CS_PIN, X_DEVICES, Y_DEVICES);
 Button2 buttonSwitch = Button2(PUSH_BUTTON_1);
+OneWire oneWire(ONE_WIRE_DS18B20_BUS);
+
+// Pass our oneWire reference to Dallas Temperature. 
+DallasTemperature tempSensors(&oneWire);
 
 uint32_t prevMillis;
 bool swapScreen = false;
@@ -31,6 +38,11 @@ unsigned long timer =0;
 
 char timestampChr[50] = { '\0' };
 char datestampChr[80] = { '\0' };
+
+float intTemp;
+float extTemp;
+float extTempHist =0;
+float intTempHist =0;
 
 void onSwitchPressed(Button2& btn) {
 	swapScreen = true;
@@ -60,6 +72,11 @@ void setup() {
     mp.begin();
     mp.setIntensity(1);
 
+	tempSensors.begin();
+	Serial.print("Found ");
+	Serial.print(tempSensors.getDeviceCount(), DEC);
+	Serial.println(" DS18B20.");
+
 	timer = millis();
 
 }
@@ -68,7 +85,7 @@ void setup() {
 void loop() {
 	//heap_caps_check_integrity_all(true);
 	//heap_caps_print_heap_info(MALLOC_CAP_DEFAULT);
-
+	
 	buttonSwitch.loop();
 
     if (millis() - timer > 1000 ||swapScreen) {
@@ -83,27 +100,57 @@ void loop() {
             loopState = TIME_DISPLAY;
             break;
 
+		case TEMP_DISPLAY:
+			tempSensors.requestTemperatures();
+			
+			intTemp = tempSensors.getTempCByIndex(0);
+			extTemp = HTTPrequestTemperature();
+
+			if (intTemp != intTempHist || extTemp != extTempHist) {
+				intTempHist = intTemp;
+				extTempHist = extTemp;
+				
+				mp.setFont(_Fixed_5x3);
+				mp.clear();
+				char buffer[10];
+				sprintf(buffer, "%0.1f$", intTemp);
+				mp.drawText( 4, mp.getYMax()-2, buffer);
+				Serial.print(buffer);
+				Serial.print(" ");
+				sprintf(buffer, "%0.1f$", extTemp);
+				mp.drawText(27, mp.getYMax() - 2, buffer);
+				Serial.println(buffer);
+			}
+			else {
+				Serial.println(" - ");
+			}
+			
+												
+			swapcounter++;
+			if (swapScreen || swapcounter > 5) {
+				swapcounter = 0;
+				swapScreen = false;
+				loopState =  DATE_DISPLAY;
+			}
+			
+			break;
+
         case DATE_DISPLAY:
             
 			getNTPdatechr(datestampChr);
 			
-			mp.setFont(_Fixed_5x3);
+			mp.setFont(_renoFont8px);
             mp.clear();
             mp.drawText(0, mp.getYMax(), datestampChr);
-
-			char buffer[10];
-			sprintf(buffer, "%0.1f",HTTPrequestTemperature());
-            mp.drawText(31, 4, buffer);
-			mp.drawText(44,4, "$");
+						
 			swapcounter++;
             if (swapScreen || swapcounter > 5) {
 				swapcounter = 0;
                 swapScreen = false;
-                loopState = TIME_DISPLAY;
+				loopState = TIME_DISPLAY;
             }
-			Serial.print(datestampChr);
-			Serial.print(" - ");
-			Serial.println(buffer);
+			Serial.println(datestampChr);
+
             break;
 
         case TIME_DISPLAY:
@@ -112,10 +159,12 @@ void loop() {
 			mp.setFont(_renoFont8px);
             mp.clear();
             mp.drawText(4, mp.getYMax(), timestampChr);
-            if (swapScreen) {
-                swapScreen = false;
-                loopState = DATE_DISPLAY;
-            }
+			swapcounter++;
+			if (swapScreen || swapcounter > 5) {
+				swapcounter = 0;
+				swapScreen = false;
+				loopState = TEMP_DISPLAY;
+			}
 			Serial.println(timestampChr);
             break;
 
